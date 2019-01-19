@@ -29,64 +29,30 @@ resources:
 storage:
   longTerm:
     accessMode: "ReadWriteOnce"
-    storageClass: "gp2" # Note: "gp2" is for AWS. Use the storage class for your cloud provider.
+    storageClass: "standard" # Note: "gp2" is for AWS. Use the storage class for your cloud provider.
     name: "mgob-storage"
     size: 10Gi
   tmp:
     accessMode: "ReadWriteOnce"
-    storageClass: "gp2" # Note: "gp2" is for AWS. Use the storage class for your cloud provider.
+    storageClass: "standard" # Note: "gp2" is for AWS. Use the storage class for your cloud provider.
     name: "mgob-tmp"
     size: 3Gi
 configMap:
   name: "mgob-config"
   data:
     # Add each plan as per below.
-    the-first-database.yml: |
+    database-loops-test.yml: |
       target:
-        host: "mongodb-replicaset"
+        host: "mongodb-rs-test-mongodb-replicaset-0.mongodb-rs-test-mongodb-replicaset,mongodb-rs-test-mongodb-replicaset-1.mongodb-rs-test-mongodb-replicaset,mongodb-rs-test-mongodb-replicaset-2.mongodb-rs-test-mongodb-replicaset"
         port: 27017
-        database: "my-database"
-        username: "mongodb-backup"
-        password: "backup-user-pwd"
+        database: ""
+        username: ""
+        password: ""
         params: "--authenticationDatabase admin"
       scheduler:
         cron: "0 5 * * *"
         retention: 7
         timeout: 60
-      s3:
-        url: "https://s3.amazonaws.com"
-        bucket: "my-db-backups"
-        accessKey: "ABCDEFGHIJKLMNOPQRST"
-        secretKey: "be0da49b599b24115c7f53c92c729cbb2c8a17e5"
-        api: "S3v4"
-      slack:
-        url: "https://hooks.slack.com/services/..."
-        channel: mongochan
-        username: mgob
-        # 'true' to notify only on failures
-        warnOnly: false
-
-    the-second-database.yml: |
-      target:
-        host: "mongodb-replicaset"
-        port: 27017
-        database: "my-database"
-        username: "mongodb-backup"
-        password: "backup-user-pwd"
-        params: "--authenticationDatabase admin"
-      scheduler:
-        cron: "0 5 * * *"
-        retention: 7
-        timeout: 60
-      s3:
-        url: "https://s3.amazonaws.com"
-        bucket: "my-db-backups"
-        accessKey: "ABCDEFGHIJKLMNOPQRST"
-        secretKey: "be0da49b599b24115c7f53c92c729cbb2c8a17e5"
-        api: "S3v4"
-      slack:
-        url: "https://hooks.slack.com/services/..."
-        channel: mongochan
-        username: mgob
-        # 'true' to notify only on failures
-        warnOnly: false
+      gcloud:
+        bucket: "loops-test-backups"
+        keyFilePath: /etc/service-account-secret/loops-test-backup-service-account.json

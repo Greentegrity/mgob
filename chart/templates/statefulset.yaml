@@ -21,6 +21,9 @@ spec:
         - containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
         volumeMounts:
+        - name: "gcp-service-account-secret"
+          mountPath: "/etc/service-account-secret"
+          readOnly: true
         - name: "mgob-storage"
           mountPath: "/storage"
         - name: "mgob-tmp"
@@ -33,6 +36,9 @@ spec:
           subPath: {{ $name | quote }}
 {{ end }}
       volumes:
+      - name: gcp-service-account-secret
+        secret:
+          secretName: loops-backup-key
       - name: {{ .Values.configMap.name }}
         configMap:
           name: {{ .Values.configMap.name }}
